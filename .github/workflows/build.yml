@@ -28,16 +28,11 @@ jobs:
       - name: Build executable (Linux/macOS)
         if: runner.os != 'Windows'
         run: |
-          pyinstaller --onefile \
-          --add-data "$(python3 -c 'import esptool, os; print(os.path.join(os.path.dirname(esptool.__file__), "targets") + ":esptool/targets")')" \
-          flash_esp32.py
+          pyinstaller --onefile --add-data "$(python3 -c 'import esptool, os; print(os.path.join(os.path.dirname(esptool.__file__), "targets") + ":esptool/targets")')" flash_esp32.py
 
       - name: Build executable (Windows)
         if: runner.os == 'Windows'
-        run: |
-          pyinstaller --onefile ^
-          --add-data "$(python -c "import esptool, os; print(os.path.join(os.path.dirname(esptool.__file__), 'targets') + ';esptool/targets')")" ^
-          flash_esp32.py
+        run: pyinstaller --onefile --add-data "$(python -c "import esptool, os; print(os.path.join(os.path.dirname(esptool.__file__), 'targets') + ';esptool/targets')")" flash_esp32.py
 
       - name: Upload executable
         uses: actions/upload-artifact@v4
