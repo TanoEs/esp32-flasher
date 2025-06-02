@@ -1,36 +1,35 @@
-me: Build ESP32 Flasher Executables
+name: Build ESP32 Flasher Executables
 
 on:
-    push:
-          branches: [ main ]
+  push:
+    branches: [ main ]
 
-          jobs:
-              build:
-                    runs-on: ${{ matrix.os }}
-                          strategy:
-                                  matrix:
-                                            os: [ubuntu-latest, windows-latest, macos-latest]
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
 
-                                                  steps:
-                                                          - name: Checkout code
-                                                                    uses: actions/checkout@v3
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-                                                                            - name: Set up Python
-                                                                                      uses: actions/setup-python@v4
-                                                                                                with:
-                                                                                                            python-version: '3.10'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
 
-                                                                                                                    - name: Install dependencies
-                                                                                                                              run: |
-                                                                                                                                          pip install -r requirements.txt
-                                                                                                                                                    pip install pyinstaller
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pyinstaller
 
-                                                                                                                                                          - name: Build executable
-                                                                                                                                                                    run: pyinstaller --onefile flash_esp32.py
+      - name: Build executable
+        run: pyinstaller --onefile flash_esp32.py
 
-                                                                                                                                                                            - name: Upload executable
-                                                                                                                                                                                      uses: actions/upload-artifact@v3
-                                                                                                                                                                                                with:
-                                                                                                                                                                                                            name: ${{ matrix.os }}-flasher
-                                                                                                                                                                                                                        path: dist/flash_esp32*
-
+      - name: Upload executable
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.os }}-flasher
+          path: dist/flash_esp32*
