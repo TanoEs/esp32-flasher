@@ -25,18 +25,19 @@ jobs:
           pip install -r requirements.txt
           pip install pyinstaller
 
-      - name: Build executable
+      - name: Build executable (Linux/macOS)
+        if: runner.os != 'Windows'
         run: |
-          OS=$(uname -s)
-          if [ "$OS" = "Linux" ] || [ "$OS" = "Darwin" ]; then
-            pyinstaller --onefile \
-              --add-data "$(python3 -c 'import esptool, os; print(os.path.join(os.path.dirname(esptool.__file__), "targets") + ":esptool/targets")')" \
-              flash_esp32.py
-          else
-            pyinstaller --onefile ^
-              --add-data "$(python -c "import esptool, os; print(os.path.join(os.path.dirname(esptool.__file__), 'targets') + ';esptool/targets')")" ^
-              flash_esp32.py
-          fi
+          pyinstaller --onefile \
+          --add-data "$(python3 -c 'import esptool, os; print(os.path.join(os.path.dirname(esptool.__file__), "targets") + ":esptool/targets")')" \
+          flash_esp32.py
+
+      - name: Build executable (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          pyinstaller --onefile ^
+          --add-data "$(python -c "import esptool, os; print(os.path.join(os.path.dirname(esptool.__file__), 'targets') + ';esptool/targets')")" ^
+          flash_esp32.py
 
       - name: Upload executable
         uses: actions/upload-artifact@v4
@@ -45,3 +46,4 @@ jobs:
           path: dist/flash_esp32*
           if-no-files-found: error
           retention-days: 7
+
