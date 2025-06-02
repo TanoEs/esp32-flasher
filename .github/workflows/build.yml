@@ -13,10 +13,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.5.3
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v4.7.1
         with:
           python-version: '3.10'
 
@@ -29,7 +29,8 @@ jobs:
         run: pyinstaller --onefile flash_esp32.py
 
       - name: Upload executable
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v3.1.3
         with:
           name: ${{ matrix.os }}-flasher
           path: dist/flash_esp32*
+
