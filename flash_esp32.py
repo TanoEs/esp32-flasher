@@ -90,34 +90,41 @@ def serial_monitor(port, baudrate=115200):
         print(f"Error: {e}")
 
 def main():
-    print("Welcome to the ESP32 Flasher Tool!")
-    print("This tool flashes your ESP32 with bootloader, partitions, and firmware.")
-    print("")
-    if len(sys.argv) == 2:
-        project_name = sys.argv[1]
-    else:
-        project_name = input("Enter the name of the project folder (with .bin files): ").strip()
+    try:
+        print("🔧 Welcome to the ESP32 Flasher Tool!")
+        print("This tool flashes your ESP32 with bootloader, partitions, and firmware.\n")
 
-    project_dir = os.path.join(BASE_FIRMWARE_DIR, project_name)
+        if len(sys.argv) == 2:
+            project_name = sys.argv[1]
+        else:
+            project_name = input("Enter the name of the project folder (with .bin files): ").strip()
 
-    if not os.path.isdir(project_dir):
-        print(f"Error: project directory '{project_dir}' does not exist.")
-        sys.exit(1)
+        project_dir = os.path.join(BASE_FIRMWARE_DIR, project_name)
 
-    port = choose_port()
-    flash(project_dir, port)
+        if not os.path.isdir(project_dir):
+            print(f"❌ Error: project directory '{project_dir}' does not exist.")
+            input("Press Enter to exit...")
+            sys.exit(1)
 
-    # Ask about launching serial monitor
-    answer = input("Launch serial monitor? [Y/n] (optionally: 'Y <baud_rate>'): ").strip().lower()
-    if answer and answer.startswith('y'):
-        parts = answer.split()
-        baudrate = 115200  # Default
-        if len(parts) > 1:
-            try:
-                baudrate = int(parts[1])
-            except ValueError:
-                print("Invalid baud rate. Using default 115200.")
-        serial_monitor(port, baudrate)
+        port = choose_port()
+        flash(project_dir, port)
+
+        answer = input("Launch serial monitor? [Y/n] (optionally: 'Y <baud_rate>'): ").strip().lower()
+        if answer.startswith('y'):
+            parts = answer.split()
+            baudrate = 115200
+            if len(parts) > 1:
+                try:
+                    baudrate = int(parts[1])
+                except ValueError:
+                    print("Invalid baud rate. Using default 115200.")
+            serial_monitor(port, baudrate)
+
+    except Exception as e:
+        print(f"\n❌ An unexpected error occurred:\n{e}")
+    finally:
+        input("\nPress Enter to exit...")
+
 
 if __name__ == "__main__":
     main()
